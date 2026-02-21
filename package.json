@@ -1,12 +1,12 @@
 {
-    "name": "conflictura",
-    "preductname": "Conflictura Launcher",
-    "version": "4.0.1",
-    "description": "Conflictura modded server launcher",
+    "name": "scandicraft",
+    "preductname": "Scandicraft Launcher",
+    "version": "1.0.1",
+    "description": "Scandicraft modded server launcher",
     "main": "src/app.js",
     "author": "Riptiaz/Boulldogo/Vexato/Luuxis",
-    "env": "azuriom",
-    "settings": "https://conflictura.eu",
+    "env": "panel",
+    "settings": "http://scandi-launcher.xyz",
     "scripts": {
         "start": "cross-env-shell NODE_ENV=dev electron .",
         "build": "node build.js --obf=true --build=platform",
@@ -38,6 +38,6 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/Riptiaz/CentralCorp-Launcher.git"
+        "url": "git+https://github.com/gogobateur123/CentralCorp-Launcher"
     }
 }

@@ -16,8 +16,11 @@ const launch = new Launch();
 const pkg = require('../package.json');
 const settings_url = pkg.user ? `${pkg.settings}/${pkg.user}` : pkg.settings;
 
+// 🔹 CORRECTION : dataDirectory selon config et OS
+const dataDirectory = process.platform === 'darwin'
+    ? path.join(process.env.HOME, 'Library', 'Application Support')
+    : process.env.APPDATA || path.join(process.env.HOME, '.');
 
-const dataDirectory = process.env.APPDATA || (process.platform == 'darwin' ? `${process.env.HOME}/Library/Application Support` : process.env.HOME);
 const MONTHS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
 
 class Home {
@@ -87,9 +90,12 @@ class Home {
 
     setServerIcon() {
         const serverImg = document.querySelector('.server-img');
-        serverImg.setAttribute("src", this.config.server_icon);
-        if (!this.config.server_icon) {
-            serverImg.style.display = "none";
+        if (this.config.server_icon) {
+            serverImg.setAttribute("src", this.config.server_icon);
+            serverImg.style.display = "block";
+        } else {
+            serverImg.setAttribute("src", "assets/images/logo/scandilogo.png");
+            serverImg.style.display = "block";
         }
     }
 
@@ -122,11 +128,16 @@ class Home {
 
         const screen = resolution.screen.width === '<auto>' ? false : { width: resolution.screen.width, height: resolution.screen.height };
 
+        // 🔹 CHEMIN CORRIGE pour le launcher
+        const launcherDataDir = process.platform === 'darwin'
+            ? path.join(dataDirectory, this.config.dataDirectory)
+            : path.join(dataDirectory, `.${this.config.dataDirectory}`);
+
         return {
             url: urlpkg,
             authenticator: account,
             timeout: 10000,
-            path: `${dataDirectory}/${process.platform == 'darwin' ? this.config.dataDirectory : `.${this.config.dataDirectory}`}`,
+            path: launcherDataDir,
             version: this.config.game_version,
             detached: launcherSettings.launcher.close === 'close-all' ? false : true,
             downloadFileMultiple: 30,
@@ -141,7 +152,6 @@ class Home {
                 "launcher_config",
             ],
             intelEnabledMac: process.platform === 'darwin' && process.arch === 'arm64',
-            downloadFileMultiple: 30,
             JVM_ARGS: [],
             GAME_ARGS: [],
             java: this.config.java,
@@ -319,8 +329,12 @@ class Home {
     }
 
     async verifyModsBeforeLaunch() {
-        const modsDir = path.join(dataDirectory, process.platform == 'darwin' ? this.config.dataDirectory : `.${this.config.dataDirectory}`, 'mods');
-        const launcherConfigDir = path.join(dataDirectory, process.platform == 'darwin' ? this.config.dataDirectory : `.${this.config.dataDirectory}`, 'launcher_config');
+        const launcherDataDir = process.platform === 'darwin'
+            ? path.join(dataDirectory, this.config.dataDirectory)
+            : path.join(dataDirectory, `.${this.config.dataDirectory}`);
+
+        const modsDir = path.join(launcherDataDir, 'mods');
+        const launcherConfigDir = path.join(launcherDataDir, 'launcher_config');
         const modsConfigFile = path.join(launcherConfigDir, 'mods_config.json');
 
         if (!fs.existsSync(modsDir) || !fs.existsSync(modsConfigFile)) {
