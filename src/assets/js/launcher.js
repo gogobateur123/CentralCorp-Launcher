@@ -422,4 +422,3 @@ class Launcher {
 new Launcher().init();
 
 document.getElementById('preload-title').textContent = t('loading');
-
